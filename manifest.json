@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+  "name": "Libnotify Notifications in Chrome",
+  "version": "1.0.0",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [{
+    "all_frames": true,
+    "js": ["content.js"],
+    "matches": ["<all_urls>"],
+    "run_at": "document_end"
+  }],
+  "permissions": [ "notifications", "nativeMessaging", "tabs", "http://*/*", "https://*/*" ],
+  "web_accessible_resources": ["content.js", "page.js"],
+  "description": "Show notifications using libnotify."
+}

@@ -1,0 +1,9 @@
+{
+  "name": "io.github.nikola_kocic.attention_on_notification_chrome",
+  "description": "Libnotify Notifications in Chrome",
+  "path": "HOST_PATH",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://___EXTENSION_ID___/"
+  ]
+}
