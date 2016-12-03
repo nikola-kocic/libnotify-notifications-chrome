@@ -17,15 +17,10 @@
 
 //#define DEBUG
 
-union buffer_len {
-    // easy way to do pack & unpack
-    uint32_t num;
-    char str[4];
-};
 
 int main(int argc, char** argv) {
 
-    union buffer_len input_len;
+    uint32_t input_len;
     char *input_buffer = NULL;
     json_object *json_obj = NULL;
     json_object *json_title = NULL;
@@ -38,11 +33,12 @@ int main(int argc, char** argv) {
     CURLcode curl_ret;
     int got_icon = 0;
     char *icon_filename = NULL;
+    uint8_t input_len_bytes[4];
 
     while(1) {
 
         // reset
-        input_len.num = 0;
+        input_len = 0;
         notification = NULL;
         got_icon = 0;
         icon_filename = NULL;
@@ -54,10 +50,20 @@ int main(int argc, char** argv) {
 
         // Native Messaging spec is 4 chars specifying an integer
         // length followed by JSON
-        read(STDIN_FILENO, input_len.str, 4);
-        if(input_len.num > 0) {
+        ssize_t read_bytes = read(STDIN_FILENO, input_len_bytes, 4);
+        if(read_bytes > 0) {
+            input_len = *(uint32_t*)input_len_bytes;
+#ifdef DEBUG
+            // debug
+            fprintf(fp, "len = %u\n", input_len);
+            fprintf(fp, "Raw len bytes: |");
+            fwrite(input_len_bytes, 4, 1, fp);
+            fprintf(fp, "|");
+            fprintf(fp, "Numeric len bytes = %u, %u, %u, %u \n",
+                    input_len_bytes[0], input_len_bytes[1], input_len_bytes[2], input_len_bytes[3]);
+#endif
             // got a length, get the JSON
-            input_buffer = malloc((sizeof(char) * input_len.num)+1);
+            input_buffer = (char*)malloc((sizeof(char) * input_len)+1);
             if(input_buffer == NULL) {
 #ifdef DEBUG
                 fprintf(fp, "Failed to allocate content\n");
@@ -65,7 +71,7 @@ int main(int argc, char** argv) {
 #endif
                 exit(1);
             }
-            read(STDIN_FILENO, input_buffer, input_len.num);
+            read(STDIN_FILENO, input_buffer, input_len);
             if(ferror(stdin)) {
                 free(input_buffer);
 #ifdef DEBUG
@@ -75,7 +81,7 @@ int main(int argc, char** argv) {
                 exit(1);
             }
             // always terminate your strings yo
-            input_buffer[input_len.num] = '\0';
+            input_buffer[input_len] = '\0';
 
             // parse that stuff.. we know it's good JSON.. just cuz we're
             // awesome
@@ -83,7 +89,6 @@ int main(int argc, char** argv) {
 
 #ifdef DEBUG
             // debug
-            fprintf(fp, "%d\n", input_len.num);
             fprintf(fp, "%s\n", input_buffer);
             fprintf(fp, "new_obj.to_string()=%s\n", json_object_to_json_string(json_obj));
 #endif
