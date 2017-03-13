@@ -1,5 +1,5 @@
 {
-  "name": "io.github.nikola_kocic.attention_on_notification_chrome",
+  "name": "io.github.nikola_kocic.libnotify_notifications_chrome",
   "description": "Libnotify Notifications in Chrome",
   "path": "HOST_PATH",
   "type": "stdio",
