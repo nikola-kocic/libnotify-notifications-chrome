@@ -1,6 +1,7 @@
 /*
  * Nick Mossie
  * ld@initiated.com
+ * BrLi <BrLi@github>
  *
  * invoke_notify.c
  * requires libnotify, json-c, and curl
@@ -97,15 +98,16 @@ int main(int argc, char** argv) {
             free(input_buffer);
 
             // grab all the entities
-            json_title = json_object_object_get(json_obj, "title");
-            json_body = json_object_object_get(json_obj, "body");
-            json_iconUrl = json_object_object_get(json_obj, "iconUrl");
+            struct json_object *json_title, *json_body, *json_iconUrl;
+            json_object_object_get_ex(json_obj, "title", &json_title);
+            json_object_object_get_ex(json_obj, "body", &json_body);
+            json_object_object_get_ex(json_obj, "iconUrl", &json_iconUrl);
 
             if(strlen(json_object_get_string(json_iconUrl)) > 0) {
                 // we have an image url.. use CURL to get it
                 curl = curl_easy_init();
                 if(curl) {
-                    icon_filename = tmpnam(NULL);
+                    *icon_filename = mkstemp(NULL);
 #ifdef DEBUG
                     fprintf(fp, "icon_filename: %s\n", icon_filename);
 #endif
