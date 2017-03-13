@@ -20,7 +20,7 @@ else
   fi
 fi
 
-HOST_NAME=io.github.nikola_kocic.attention_on_notification_chrome
+HOST_NAME=io.github.nikola_kocic.libnotify_notifications_chrome
 
 # Create directory to store native messaging host.
 mkdir -p $TARGET_DIR
